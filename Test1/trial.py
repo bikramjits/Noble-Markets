@@ -69,7 +69,7 @@ class LoginHandler(BaseHandler):
             increased = str(int(incorrect)+1)
             self.set_secure_cookie("incorrect", increased)
             self.write("""<center>
-                            Something Wrong With Your Data (%s)<br />
+                            Incorrect Username/Password combination. (%s)<br />
                             <a href="/">Go Home</a>
                           </center>""" % increased)
 
@@ -139,13 +139,15 @@ class TradeHandler(BaseHandler):
 
     else:
         need_more = 1.2 * trade_amount - trade_balance 
+        message = """<center>
+                        You need """+"$"+ str(need_more)+ " "+"""to complete this transaction (%s)<br />
+                        <a href="/">Go Home</a>
+                       </center>"""
+
         incorrect = self.get_secure_cookie("incorrect") or 0
         increased = str(int(incorrect)+1)
         self.set_secure_cookie("incorrect", increased)
-        self.write("""<center>
-                        You need $$$ to complete this transaction (%s)<br />
-                        <a href="/">Go Home</a>
-                       </center>""" % increased)
+        self.write(message% increased)
 
 
 def main():
