@@ -1,54 +1,29 @@
-#http://www.tornadoweb.org/en/stable/guide/security.html
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker 
 
-import tornado.ioloop
-import tornado.web
+from models import Balance, Base, User
 
-class BaseHandler(tornado.web.RequestHandler):
-    def get_current_user(self):
-        return self.get_secure_cookie("user")
+engine = create_engine('sqlite:///sqlalchemy_user.db')
 
-class MainHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.write("Hello! Please sign in below.")
+Base.metadata.bind = engine 
 
-class LoginHandler(BaseHandler):
-    def get(self):
-        #The Login Page
-        self.write('<html><body><form action="/login" method="post">'
-                   'Username: <input type="text" name="name">'
-                   'Password: <input type="password" name="pass">'
-                   '<input type="submit" value="Sign in">'
-                   '</form></body></html>')
+DBSession = sessionmaker(bind = engine)
 
-        #If Password is wrong. 
-        # if self.current_user is None: 
-        # 	self.write("Wrong Username/ Password! Please try again.")
+session = DBSession()
 
-    def post(self):
-        getusername = tornado.escape.xhtml_escape(self.get_argument("name"))
-        getpassword = tornado.escape.xhtml_escape(self.get_argument("pass"))
-        if "demo" == getusername and "demo" == getpassword:
-            self.set_secure_cookie("user", self.get_argument("name"))
-            self.set_secure_cookie("incorrect", "0")
-            self.redirect("/")
-        else:
-            incorrect = self.get_secure_cookie("incorrect") or 0
-            increased = str(int(incorrect)+1)
-            self.set_secure_cookie("incorrect", increased)
-            self.write("""<center>
-                            Something Wrong With Your Data (%s)<br />
-                            <a href="/">Go Home</a>
-                          </center>""" % increased)
-        
+new_user = User(username = "Jack", password= "jack")
+session.add(new_user)
+session.commit()
 
+new_balance = Balance(username = "Jack", trading_balance = 700, checking_balance = 800, user = new_user)
+session.add(new_balance)
+session.commit()
 
-def make_app():
-    return tornado.web.Application([
-        (r"/", MainHandler),
-        (r"/login", LoginHandler),
-    ])
+new_user = User(username = "Jill", password= "jill")
+session.add(new_user)
+session.commit()
 
-if __name__ == "__main__":
-    app = make_app()
-    app.listen(8888)
-    tornado.ioloop.IOLoop.current().start()
+new_balance = Balance(username = "Jill", trading_balance = 800, checking_balance = 700, user = new_user)
+session.add(new_balance)
+session.commit()
+
