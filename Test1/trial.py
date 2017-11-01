@@ -38,7 +38,10 @@ class BaseHandler(tornado.web.RequestHandler):
 class MainHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        self.render('index.html')
+        curr_name = tornado.escape.xhtml_escape(self.get_secure_cookie("user"))
+        curr_user = session.query(Balance).filter(User.username == curr_name).first()
+        self.render('index.html', items = [curr_user.checking_balance, curr_user.trading_balance])
+
 
 class LoginHandler(BaseHandler):
     @tornado.gen.coroutine
