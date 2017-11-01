@@ -19,11 +19,13 @@ DBSession.bind = engine
 
 session = DBSession()
 
+
 def data_verify(usern, passw):
     input_user = session.query(User).filter(User.username == usern).first()
     if (input_user is None): 
         return False
     if (input_user.password != passw): 
+
         return False
     return True
 
@@ -100,7 +102,9 @@ class Application(tornado.web.Application):
 class TradeHandler(BaseHandler):
    
    def post(self): 
-    curr_user = session.query(Balance).filter(Balance.username == "Jack").first()
+    curr_name = tornado.escape.xhtml_escape(self.get_secure_cookie("user"))
+    print(curr_name)
+    curr_user = session.query(Balance).filter(User.username == curr_name).first()
     trade_amount = float(tornado.escape.xhtml_escape(self.get_argument("amount")))
     to = (tornado.escape.xhtml_escape(self.get_argument("to")))
     to_user = session.query(Balance).filter(Balance.username == to).first()
