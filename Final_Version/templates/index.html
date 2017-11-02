@@ -1,0 +1,19 @@
+<html>
+<head>
+<title>Noble Market</title>
+</head>
+<body>
+<h1>Welcome, {{ current_user }}!</h1>
+<h2> Checking Account Balance: </h2>
+<h3>{{ items[0] }}</h3>
+<h2> Trading Account Balance: </h2>
+<h3>{{ items[1] }}</h3>
+<form action="/trade" method="POST">
+<p>Receiver: <input type="text" name="to" /><p>
+<p>Amount: <input type="text" name="amount" /><p>
+<p><input type="submit" value="Trade Here" /></p>
+{% module xsrf_form_html() %}
+
+<a href="/logout">logout</a>
+</body>
+</html>
