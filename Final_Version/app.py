@@ -84,7 +84,7 @@ class LoginHandler(BaseHandler):
 class TradeHandler(BaseHandler):
    def post(self):
     curr_name = tornado.escape.xhtml_escape(self.get_secure_cookie("user"))
-    curr_user = session.query(Balance).filter(User.username == curr_name).first()
+    curr_user = session.query(Balance).filter(Balance.username == curr_name).first()
     trade_amount = float(tornado.escape.xhtml_escape(self.get_argument("amount")))
     to = (tornado.escape.xhtml_escape(self.get_argument("to")))
     to_user = session.query(Balance).filter(Balance.username == to).first()
